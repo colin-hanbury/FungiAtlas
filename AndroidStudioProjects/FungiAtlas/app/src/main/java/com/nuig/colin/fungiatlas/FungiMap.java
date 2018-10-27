@@ -47,7 +47,7 @@ import java.util.Date;
         DatabaseReference myRef;
 
 
-    /*ValueEventListener locationListener = new ValueEventListener() {
+    ValueEventListener locationListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             // Get Location object and use the values to update the UI
@@ -61,13 +61,13 @@ import java.util.Date;
             //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             // ...
         }
-    };*/
+    };
 
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_maps);
+            setContentView(R.layout.activity_fungi_map);
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -107,7 +107,6 @@ import java.util.Date;
             LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
             LocationData locationData = new LocationData(location.getLongitude(), location.getLatitude());
             String key = String.valueOf(new Date().getTime());
-            //myRef.child("location").child(key).setValue("hello");
 
             myRef.child("Locations:").child(key).setValue(locationData);
 
@@ -173,7 +172,7 @@ import java.util.Date;
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     //Prompt the user once explanation has been shown
-                                    ActivityCompat.requestPermissions(MapsActivity.this,
+                                    ActivityCompat.requestPermissions(FungiMap.this,
                                             new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                                             99);
                                 }
