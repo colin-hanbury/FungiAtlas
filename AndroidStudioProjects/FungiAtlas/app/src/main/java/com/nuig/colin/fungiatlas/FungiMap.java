@@ -47,7 +47,7 @@ import java.util.Date;
         DatabaseReference myRef;
 
 
-    /*ValueEventListener locationListener = new ValueEventListener() {
+    ValueEventListener locationListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             // Get Location object and use the values to update the UI
@@ -61,7 +61,7 @@ import java.util.Date;
             //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             // ...
         }
-    };*/
+    };
 
 
         @Override
