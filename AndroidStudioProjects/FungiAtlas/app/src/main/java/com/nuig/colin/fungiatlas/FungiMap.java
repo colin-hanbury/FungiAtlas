@@ -1,6 +1,5 @@
 package com.nuig.colin.fungiatlas;
 
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -38,7 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Date;
 
-    public class FungiMap extends FragmentActivity implements OnMapReadyCallback,LocationListener {
+    public class FungiMap extends FragmentActivity implements OnMapReadyCallback,LocationListener, OnMarkerClickListener {
 
         private GoogleMap mMap;
         private ProgressDialog LocationDialog;
@@ -53,6 +53,7 @@ import java.util.Date;
             // Get Location object and use the values to update the UI
             LocationData location = dataSnapshot.getValue(LocationData.class);
             // ...
+            addMarker(new LatLng(location.getLatitude(),location.getLongitude()));
         }
 
         @Override
@@ -60,14 +61,16 @@ import java.util.Date;
             // Getting Post failed, log a message
             //Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
             // ...
+            Toast.makeText(FungiMap.this, "Failed to load location.",
+                    Toast.LENGTH_SHORT).show();
         }
     };
-
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_fungi_map);
+
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -77,9 +80,6 @@ import java.util.Date;
 
             database = FirebaseDatabase.getInstance();
             myRef = database.getReference();
-
-            //myRef.setValue("Hello, World!");
-            //myRef.addValueEventListener(locationListener);
         }
 
 
@@ -104,7 +104,7 @@ import java.util.Date;
         }
 
         public void onLocationChanged(Location location) {
-            LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             LocationData locationData = new LocationData(location.getLongitude(), location.getLatitude());
             String key = String.valueOf(new Date().getTime());
 
@@ -326,4 +326,8 @@ import java.util.Date;
                     });
         }
 
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            return false;
+        }
     }

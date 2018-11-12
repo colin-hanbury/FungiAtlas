@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="fieldEmail" type="id" />
+    <item name="fieldPassword" type="id" />
+    <item name="buttonSignIn" type="id" />
+    <item name="buttonSignUp" type="id" />
+    <item name="fieldTitle" type="id" />
+    <item name="fieldBody" type="id" />
+    <item name="fabSubmitPost" type="id" />
+</resources>
