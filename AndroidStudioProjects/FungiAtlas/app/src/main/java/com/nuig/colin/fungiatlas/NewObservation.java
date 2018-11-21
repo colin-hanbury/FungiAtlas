@@ -1,10 +1,19 @@
 package com.nuig.colin.fungiatlas;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.ArrayMap;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,142 +21,143 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 
 
 public class NewObservation extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     FirebaseDatabase database;
-    DatabaseReference myRef;
+    DatabaseReference dbRef;
+    FirebaseStorage myStorageRef;
     private List<String> attributesList;
     private Map<String, String> attributesMap;
+    private Bitmap bitmap;
+    private Uri mImageUri = null;
+    private StorageReference mStorage;
+    private List<Bitmap> bitmaps;
+    private static final int CAMERA_REQUEST_CODE = 1;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_observation);
+        checkCameraPermission();
 
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
+        dbRef = database.getReference();
+        myStorageRef = FirebaseStorage.getInstance();
+        mStorage = myStorageRef.getReference();
+        bitmaps = new ArrayList<>();
 
-        Spinner capShape = findViewById(R.id.spinnerCapShape);
-        Spinner capSurface = findViewById(R.id.spinnerCapSurface);
-        Spinner capColour = findViewById(R.id.spinnerCapColour);
-        Spinner bruises = findViewById(R.id.spinnerBruises);
-        Spinner odor = findViewById(R.id.spinnerOdor);
-        Spinner gillAttachment = findViewById(R.id.spinnerGillAttachment);
-        Spinner gillSpacing = findViewById(R.id.spinnerGillSpacing);
-        Spinner gillSize = findViewById(R.id.spinnerGillSize);
-        Spinner gillColour = findViewById(R.id.spinnerGillColour);
-        Spinner stalkShape = findViewById(R.id.spinnerStalkShape);
-        Spinner stalkRoot = findViewById(R.id.spinnerStalkRoot);
-        Spinner stalkSurfaceAboveRing = findViewById(R.id.spinnerStalkSurfaceAboveRing);
+        final Spinner capShape = findViewById(R.id.spinnerCapShape);
+        final Spinner capSurface = findViewById(R.id.spinnerCapSurface);
+        final Spinner capColour = findViewById(R.id.spinnerCapColour);
+        final Spinner bruises = findViewById(R.id.spinnerBruises);
+        final Spinner odor = findViewById(R.id.spinnerOdor);
+        final Spinner gillAttachment = findViewById(R.id.spinnerGillAttachment);
+        final Spinner gillSpacing = findViewById(R.id.spinnerGillSpacing);
+        final Spinner gillSize = findViewById(R.id.spinnerGillSize);
+        final Spinner gillColour = findViewById(R.id.spinnerGillColour);
+        final Spinner stalkShape = findViewById(R.id.spinnerStalkShape);
+        final Spinner stalkRoot = findViewById(R.id.spinnerStalkRoot);
+        final Spinner stalkSurfaceAboveRing = findViewById(R.id.spinnerStalkSurfaceAboveRing);
         Spinner stalkSurfaceBelowRing = findViewById(R.id.spinnerStalkSurfaceBelowRing);
-        Spinner stalkColourAboveRing = findViewById(R.id.spinnerStalkColourAboveRing);
-        Spinner stalkColourBelowRing = findViewById(R.id.spinnerStalkColourBelowRing);
-        Spinner veilType = findViewById(R.id.spinnerVeilType);
-        Spinner veilColour = findViewById(R.id.spinnerVeilColour);
-        Spinner ringNumber = findViewById(R.id.spinnerRingNumber);
-        Spinner ringType = findViewById(R.id.spinnerRingType);
-        Spinner population = findViewById(R.id.spinnerPopulation);
-        Spinner habitat = findViewById(R.id.spinnerHabitat);
+        final Spinner stalkColourAboveRing = findViewById(R.id.spinnerStalkColourAboveRing);
+        final Spinner stalkColourBelowRing = findViewById(R.id.spinnerStalkColourBelowRing);
+        final Spinner veilType = findViewById(R.id.spinnerVeilType);
+        final Spinner veilColour = findViewById(R.id.spinnerVeilColour);
+        final Spinner ringNumber = findViewById(R.id.spinnerRingNumber);
+        final Spinner ringType = findViewById(R.id.spinnerRingType);
+        final Spinner population = findViewById(R.id.spinnerPopulation);
+        final Spinner habitat = findViewById(R.id.spinnerHabitat);
 
-        Button submit = findViewById(R.id.buttonSubmit);
+        Button addPhoto = findViewById(R.id.buttonAddPhoto);
+        final Button submit = findViewById(R.id.buttonSubmit);
 
         attributesList = new ArrayList<>();
-        attributesMap = new ArrayMap<>();
-
-
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String time = String.valueOf(new Date().getTime());
-                for(int i=0; i< attributesList.size(); i++) {
-                    String tag =attributesList.get(i);
-                    myRef.child("Fungi Attributes:").child(time).child(tag).setValue(attributesMap.get(tag));
-                }
-                Toast.makeText(NewObservation.this,"Observation submitted", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        ArrayAdapter<String> capShapeAdapter = new ArrayAdapter<String>(
+        attributesMap = new HashMap<>();
+        //------------------------------------------------------------------------------------------
+        final ArrayAdapter<String> capShapeAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.capShapes));
         arrayAdapterCreator(capShapeAdapter,capShape);
 
-        ArrayAdapter<String> capSurfaceAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> capSurfaceAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.capSurfaces));
         arrayAdapterCreator(capSurfaceAdapter,capSurface);
 
-        ArrayAdapter<String> capColourAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> capColourAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.capColours));
         arrayAdapterCreator(capColourAdapter,capColour);
 
-        ArrayAdapter<String> bruisesAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> bruisesAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.bruises));
         arrayAdapterCreator(bruisesAdapter,bruises);
 
-        ArrayAdapter<String> odorAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> odorAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.odor));
         arrayAdapterCreator(odorAdapter,odor);
 
-        ArrayAdapter<String> gillAttachmentAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> gillAttachmentAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.gillAttachments));
         arrayAdapterCreator(gillAttachmentAdapter, gillAttachment);
 
-        ArrayAdapter<String> gillSpacingAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> gillSpacingAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.gillSpacings));
         arrayAdapterCreator(gillSpacingAdapter,gillSpacing);
 
-        ArrayAdapter<String> gillSizeAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> gillSizeAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.gillSizes));
         arrayAdapterCreator(gillSizeAdapter,gillSize);
 
-        ArrayAdapter<String> gillColourAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> gillColourAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.gillColours));
         arrayAdapterCreator(gillColourAdapter,gillColour);
 
-        ArrayAdapter<String> stalkShapeAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> stalkShapeAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.stalkShapes));
         arrayAdapterCreator(stalkShapeAdapter,stalkShape);
 
-        ArrayAdapter<String> stalkRootAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> stalkRootAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.stalkRoots));
         arrayAdapterCreator(stalkRootAdapter,stalkRoot);
 
-        ArrayAdapter<String> stalkSurfaceAboveRingAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> stalkSurfaceAboveRingAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.stalkSurfacesAboveRing));
@@ -159,53 +169,156 @@ public class NewObservation extends AppCompatActivity implements AdapterView.OnI
                 getResources().getStringArray(R.array.stalkSurfacesBelowRing));
         arrayAdapterCreator(stalkSurfaceBelowRingAdapter, stalkSurfaceBelowRing);
 
-        ArrayAdapter<String> stalkColourAboveRingAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> stalkColourAboveRingAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.stalkColoursAboveRing));
         arrayAdapterCreator(stalkColourAboveRingAdapter,stalkColourAboveRing);
 
-        ArrayAdapter<String> stalkColourBelowRingAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> stalkColourBelowRingAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.stalkColoursBelowRing));
         arrayAdapterCreator(stalkColourBelowRingAdapter, stalkColourBelowRing);
 
-        ArrayAdapter<String> veilTypeAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> veilTypeAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.veilTypes));
         arrayAdapterCreator(veilTypeAdapter, veilType);
 
-        ArrayAdapter<String> veilColourAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> veilColourAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.veilColours));
         arrayAdapterCreator(veilColourAdapter,veilColour);
 
-        ArrayAdapter<String> ringNumberAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> ringNumberAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.ringNumber));
         arrayAdapterCreator(ringNumberAdapter,ringNumber);
 
-        ArrayAdapter<String> ringTypeAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> ringTypeAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.ringType));
         arrayAdapterCreator(ringTypeAdapter,ringType);
 
-        ArrayAdapter<String> populationAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> populationAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.population));
         arrayAdapterCreator(populationAdapter,population);
 
-        ArrayAdapter<String> habitatAdapter = new ArrayAdapter<String>(
+        final ArrayAdapter<String> habitatAdapter = new ArrayAdapter<String>(
                 NewObservation.this,
                 android.R.layout.simple_expandable_list_item_1,
                 getResources().getStringArray(R.array.habitats));
         arrayAdapterCreator(habitatAdapter, habitat);
+
+        //------------------------------------------------------------------------------------------
+
+
+        addPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    // use standard intent to capture an image
+                    Intent cameraPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraPhoto, CAMERA_REQUEST_CODE);
+                }
+                catch (ActivityNotFoundException anfe) {}
+            }
+        });
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String time = String.valueOf(new Date().getTime());
+                for(int i=0; i< attributesList.size(); i++) {
+                    String tag = attributesList.get(i);
+                    dbRef.child("Fungi Attributes:").child(time).child(tag).setValue(attributesMap.get(tag));
+                }
+                uploadPhotos(time);
+                Toast.makeText(NewObservation.this,"Observation submitted", Toast.LENGTH_SHORT).show();
+                attributesList.clear();
+                attributesMap.clear();
+                bitmaps.clear();
+
+                capShape.setAdapter(capShapeAdapter);
+                capSurface.setAdapter(capSurfaceAdapter);
+                capColour.setAdapter(capColourAdapter);
+                bruises.setAdapter(bruisesAdapter);
+                odor.setAdapter(odorAdapter);
+                gillAttachment.setAdapter(gillAttachmentAdapter);
+                gillSpacing.setAdapter(gillSpacingAdapter);
+                gillSize.setAdapter(gillSizeAdapter);
+                gillColour.setAdapter(gillColourAdapter);
+                stalkShape.setAdapter(stalkShapeAdapter);
+                stalkRoot.setAdapter(stalkRootAdapter);
+                stalkSurfaceAboveRing.setAdapter(stalkSurfaceAboveRingAdapter);
+                stalkColourBelowRing.setAdapter(stalkColourBelowRingAdapter);
+                stalkColourAboveRing.setAdapter(stalkColourAboveRingAdapter);
+                stalkColourBelowRing.setAdapter(stalkColourBelowRingAdapter);
+                veilType.setAdapter(veilTypeAdapter);
+                veilColour.setAdapter(veilColourAdapter);
+                ringNumber.setAdapter(ringNumberAdapter);
+                ringType.setAdapter(ringTypeAdapter);
+                population.setAdapter(populationAdapter);
+                habitat.setAdapter(habitatAdapter);
+            }
+        });
+    }
+
+    public boolean checkCameraPermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Permission to access camera")
+                        .setMessage("Please allow the app to access you camera.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(NewObservation.this,
+                                        new String[]{Manifest.permission.CAMERA},
+                                        99);
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+            else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        99);
+            }
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
+            bitmap = (Bitmap) data.getExtras().get("data");
+            bitmaps.add(bitmap);
+            Toast.makeText(NewObservation.this, "Photo ready to be uploaded", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -232,9 +345,33 @@ public class NewObservation extends AppCompatActivity implements AdapterView.OnI
     public void onNothingSelected(AdapterView<?> parent) {
     }
 
-    public void arrayAdapterCreator(ArrayAdapter adapter, Spinner spinner){
+    //reduce array adapter code
+    private void arrayAdapterCreator(ArrayAdapter adapter, Spinner spinner){
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+    }
+
+    private void uploadPhotos(String time){
+        if(!bitmaps.isEmpty()) {
+            for (Bitmap bmap : bitmaps) {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] b = stream.toByteArray();
+                String newTime = String.valueOf(new Date().getTime());
+                mStorage.child("Images").child(time).child(newTime).putBytes(b).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(NewObservation.this, "Photo upload failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            Toast.makeText(NewObservation.this, "Photo(s) uploaded", Toast.LENGTH_SHORT).show();
+        }
     }
 }
