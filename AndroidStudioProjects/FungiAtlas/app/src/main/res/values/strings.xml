@@ -15,6 +15,12 @@
         completions."
     </string>
     <!-- Strings related to new observations -->
+    <string-array name="capFeatures">
+        <item>Cap Shape</item>
+        <item>Cap Surface</item>
+        <item>Cap Colour</item>
+    </string-array>
+
     <string-array name="capShapes">
         <item>Select</item>
         <item>Bell</item>
@@ -108,33 +114,14 @@
         <item>Rooted</item>
         <item>Missing</item>
     </string-array>
-    <string-array name="stalkSurfacesAboveRing">
+    <string-array name="stalkSurfaces">
         <item>Select</item>
         <item>Fibrous</item>
         <item>Scaly</item>
         <item>Silky</item>
         <item>Smooth</item>
     </string-array>
-    <string-array name="stalkSurfacesBelowRing">
-        <item>Select</item>
-        <item>Fibrous</item>
-        <item>Scaly</item>
-        <item>Silky</item>
-        <item>Smooth</item>
-    </string-array>
-    <string-array name="stalkColoursAboveRing">
-        <item>Select</item>
-        <item>Brown</item>
-        <item>Buff</item>
-        <item>Cinnamon</item>
-        <item>Grey</item>
-        <item>Orange</item>
-        <item>Pink</item>
-        <item>Red</item>
-        <item>White</item>
-        <item>Yellow</item>
-    </string-array>
-    <string-array name="stalkColoursBelowRing">
+    <string-array name="stalkColours">
         <item>Select</item>
         <item>Brown</item>
         <item>Buff</item>
@@ -158,13 +145,13 @@
         <item>Partial</item>
         <item>Universal</item>
     </string-array>
-    <string-array name="ringNumber">
+    <string-array name="ringNumbers">
         <item>Select</item>
         <item>None</item>
         <item>1</item>
         <item>2</item>
     </string-array>
-    <string-array name="ringType">
+    <string-array name="ringTypes">
         <item>Select</item>
         <item>Other</item>
         <item>Cobwebby</item>
@@ -176,7 +163,7 @@
         <item>Sheathing</item>
         <item>Zone</item>
     </string-array>
-    <string-array name="population">
+    <string-array name="populations">
         <item>Select</item>
         <item>Abundant</item>
         <item>Clustered</item>
@@ -195,5 +182,7 @@
         <item>Waste</item>
         <item>Woodland</item>
     </string-array>
+    <string name="title_activity_new_observation_menu">NewObservationMenuActivity</string>
+    <string name="title_activity_new_observation">New Observation</string>
 
 </resources>

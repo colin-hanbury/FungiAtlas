@@ -11,8 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -41,24 +41,30 @@
 
         <activity
             android:name=".FungiMap"
-            android:label="@string/title_activity_fungi_map"></activity>
+            android:label="@string/title_activity_fungi_map">
+
+        </activity>
         <activity
             android:name=".SignIn"
             android:label="@string/title_activity_sign_in"
             android:parentActivityName=".FungiMap">
-
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nuig.colin.fungiatlas.FungiMap" />
         </activity>
-        <activity android:name=".NewObservation">
+        <activity
+            android:name=".NewObservation"
+            android:label="@string/title_activity_new_observation" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".CapFeatures" />
+        <activity android:name=".GillFeatures" />
+        <activity android:name=".StemFeatures" />
+        <activity android:name=".OtherFeatures" />
     </application>
 
 </manifest>

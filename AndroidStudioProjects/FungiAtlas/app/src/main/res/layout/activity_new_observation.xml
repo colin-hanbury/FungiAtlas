@@ -3,279 +3,115 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/RelativeLayout1"
+    android:id="@+id/LinearLayout1"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".NewObservation">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1" >
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/classic_mushroom_cap"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/classic_mushroom_gills"/>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_marginTop="10dp">
 
-            <TextView
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/buttonCapFeatures"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Fungi Attributes"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                android:textSize="20dp"/>
+                android:layout_weight="1"
+                android:text="Cap Features"/>
 
-            <TextView android:id="@+id/textCapShape"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Cap Shape:" />
-            <Spinner
-                android:id="@+id/spinnerCapShape"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Cap_Shape"/>
+            <Button
+                android:id="@+id/buttonGillFeatures"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Gill Features"/>
+        </LinearLayout>
 
-            <TextView android:id="@+id/textCapSurface"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Cap Surface:" />
-            <Spinner
-                android:id="@+id/spinnerCapSurface"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Cap_Surface"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_marginTop="20dp">
 
-            <TextView android:id="@+id/textCapColour"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Cap Colour:" />
-            <Spinner
-                android:id="@+id/spinnerCapColour"
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Cap_Colour"/>
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/classic_mushroom_stem"/>
 
-            <TextView android:id="@+id/textBruises"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Bruises:" />
-            <Spinner
-                android:id="@+id/spinnerBruises"
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Bruises"/>
+                android:layout_height="150dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/classic_mushroom_other"/>
+        </LinearLayout>
 
-            <TextView android:id="@+id/textOdor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Odor:" />
-            <Spinner
-                android:id="@+id/spinnerOdor"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Odor"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_marginTop="10dp">
 
-            <TextView android:id="@+id/textGillAttachment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Gill Attachment:" />
-            <Spinner
-                android:id="@+id/spinnerGillAttachment"
+            <Button
+                android:id="@+id/buttonStemFeatures"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Gill_Attachment"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Stem Features"/>
 
-            <TextView android:id="@+id/textGillSpacing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Gill Spacing:" />
-            <Spinner
-                android:id="@+id/spinnerGillSpacing"
+            <Button
+                android:id="@+id/buttonOtherFeatures"
                 android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Gill_Spacing"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Other Features"/>
 
-            <TextView android:id="@+id/textGillSize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Gill Size:" />
-            <Spinner
-                android:id="@+id/spinnerGillSize"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Gill_Size"/>
+        </LinearLayout>
 
-            <TextView android:id="@+id/textGillColour"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Gill Colour:" />
-            <Spinner
-                android:id="@+id/spinnerGillColour"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Gill_Colour"/>
-
-            <TextView android:id="@+id/textStalkShape"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Stalk Shape:" />
-            <Spinner
-                android:id="@+id/spinnerStalkShape"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Stalk_Shape"/>
-
-            <TextView android:id="@+id/textStalkRoot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Stalk Root:" />
-            <Spinner
-                android:id="@+id/spinnerStalkRoot"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Stalk_Root"/>
-
-            <TextView android:id="@+id/textStalkSurfaceAboveRing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Stalk Surface Above Ring:" />
-            <Spinner
-                android:id="@+id/spinnerStalkSurfaceAboveRing"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Stalk_Surface_Above_Ring"/>
-
-            <TextView android:id="@+id/textStalkSurfaceBelowRing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Stalk Surface Below Ring:" />
-            <Spinner
-                android:id="@+id/spinnerStalkSurfaceBelowRing"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Stalk_Surface_Below_Ring"/>
-
-            <TextView android:id="@+id/textStalkColourAboveRing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Stalk Colour Above Ring:" />
-            <Spinner
-                android:id="@+id/spinnerStalkColourAboveRing"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Stalk_Colour_Above_Ring"/>
-
-            <TextView android:id="@+id/textStalkColourBelowRing"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Stalk Colour Below Ring:" />
-            <Spinner
-                android:id="@+id/spinnerStalkColourBelowRing"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Stalk_Colour_Below_Ring"/>
-
-            <TextView android:id="@+id/textVeilType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Veil Type:" />
-            <Spinner
-                android:id="@+id/spinnerVeilType"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Veil_Type"/>
-
-            <TextView android:id="@+id/textVeilColour"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Veil Colour:" />
-            <Spinner
-                android:id="@+id/spinnerVeilColour"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Veil_Colour"/>
-
-            <TextView android:id="@+id/textRingNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Ring Number:" />
-            <Spinner
-                android:id="@+id/spinnerRingNumber"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Ring_Number"/>
-
-            <TextView android:id="@+id/textRingType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Ring Type:" />
-            <Spinner
-                android:id="@+id/spinnerRingType"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Ring_Type"/>
-
-            <TextView android:id="@+id/textPopulation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Population:" />
-            <Spinner
-                android:id="@+id/spinnerPopulation"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Population"/>
-
-            <TextView android:id="@+id/textHabitat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select Habitat:" />
-            <Spinner
-                android:id="@+id/spinnerHabitat"
-                android:layout_width="match_parent"
-                android:layout_height="35dp"
-                android:background="@drawable/textbox_border"
-                android:spinnerMode="dropdown"
-                android:tag="Habitat"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1" >
 
             <Button
                 android:id="@+id/buttonAddPhoto"
@@ -295,4 +131,5 @@
                 android:text="Submit"
                 android:textAlignment="center"/>
         </LinearLayout>
+    </LinearLayout>
 </ScrollView>
