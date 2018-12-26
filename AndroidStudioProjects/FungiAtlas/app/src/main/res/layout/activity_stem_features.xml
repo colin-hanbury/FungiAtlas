@@ -73,6 +73,14 @@ tools:context=".StemFeatures">
             android:spinnerMode="dropdown"
             android:tag="Stalk_Colour"/>
 
+        <Button
+            android:id="@+id/buttonAddStemPhotos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="20dp"
+            android:text="Add Photo(s)"
+            android:textAlignment="center"/>
 
         <Button
             android:id="@+id/buttonSaveAndReturnStemFeatures"

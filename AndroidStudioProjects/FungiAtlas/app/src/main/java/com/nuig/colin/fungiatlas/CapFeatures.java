@@ -1,6 +1,9 @@
 package com.nuig.colin.fungiatlas;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,10 @@ public class CapFeatures extends AppCompatActivity implements AdapterView.OnItem
     private static ArrayList<String> attributesList;
     private static HashMap<String, String> attributesMap;
     private Button saveAndReturn;
+    private Button addPhoto;
+    private Bitmap bitmap;
+    private static ArrayList<Bitmap> bitmaps;
+    private static final int CAMERA_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +36,9 @@ public class CapFeatures extends AppCompatActivity implements AdapterView.OnItem
 
         attributesList = new ArrayList<>();
         attributesMap = new HashMap<>();
+        bitmaps = new ArrayList<>();
+
+        addPhoto = findViewById(R.id.buttonAddCapPhotos);
 
         saveAndReturn = findViewById(R.id.buttonSaveAndReturnCapFeatures);
         saveAndReturn.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +75,18 @@ public class CapFeatures extends AppCompatActivity implements AdapterView.OnItem
         capColourAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         capColour.setAdapter(capColourAdapter);
         capColour.setOnItemSelectedListener(this);
+
+        addPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    // use standard intent to capture an image
+                    Intent cameraPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraPhoto, CAMERA_REQUEST_CODE);
+                }
+                catch (ActivityNotFoundException anfe) {}
+            }
+        });
     }
 
     @Override
@@ -96,10 +119,21 @@ public class CapFeatures extends AppCompatActivity implements AdapterView.OnItem
         //do nothing
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
+            bitmap = (Bitmap) data.getExtras().get("data");
+            bitmaps.add(bitmap);
+            Toast.makeText(CapFeatures.this, "Photo ready to be uploaded", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static ArrayList<String> getAttributesList(){
         return attributesList;
     }
     public static HashMap<String, String> getAttributesMap(){
         return attributesMap;
     }
+    public static ArrayList<Bitmap> getBitmapsList(){ return bitmaps; }
 }

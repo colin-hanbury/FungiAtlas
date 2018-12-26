@@ -2,13 +2,11 @@ package com.nuig.colin.fungiatlas;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,8 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 public class NewObservation extends AppCompatActivity {
@@ -45,7 +42,7 @@ public class NewObservation extends AppCompatActivity {
     private Bitmap bitmap;
     private Uri mImageUri = null;
     private StorageReference mStorage;
-    private List<Bitmap> bitmaps;
+    private ArrayList<Bitmap> bitmaps;
     private static final int CAMERA_REQUEST_CODE = 1;
 
     @Override
@@ -61,16 +58,27 @@ public class NewObservation extends AppCompatActivity {
         bitmaps = new ArrayList<>();
 
         Button capFeaturesButton = findViewById(R.id.buttonCapFeatures);
+        ImageButton capFeaturesImageButton = findViewById(R.id.imageButtonCapFeatures);
         Button gillFeaturesButton = findViewById(R.id.buttonGillFeatures);
+        ImageButton gillFeaturesImageButton = findViewById(R.id.imageButtonGillFeatures);
         Button stemFeaturesButton = findViewById(R.id.buttonStemFeatures);
+        ImageButton stemFeaturesImageButton = findViewById(R.id.imageButtonStemFeatures);
         Button otherFeaturesButton = findViewById(R.id.buttonOtherFeatures);
-        Button addPhoto = findViewById(R.id.buttonAddPhoto);
+        ImageButton otherFeaturesImageButton = findViewById(R.id.imageButtonOtherFeatures);
+
         Button submit = findViewById(R.id.buttonSubmit);
 
         attributesList = new ArrayList<>();
         attributesMap = new HashMap<>();
 
         capFeaturesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent capFeaturesPage = new Intent(NewObservation.this, CapFeatures.class);
+                startActivity(capFeaturesPage);
+            }
+        });
+        capFeaturesImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent capFeaturesPage = new Intent(NewObservation.this, CapFeatures.class);
@@ -85,6 +93,13 @@ public class NewObservation extends AppCompatActivity {
                 startActivity(gillFeaturesPage);
             }
         });
+        gillFeaturesImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent gillFeaturesPage = new Intent(NewObservation.this, GillFeatures.class);
+                startActivity(gillFeaturesPage);
+            }
+        });
 
         stemFeaturesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,8 +108,22 @@ public class NewObservation extends AppCompatActivity {
                 startActivity(stemFeaturesPage);
             }
         });
+        stemFeaturesImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent stemFeaturesPage = new Intent(NewObservation.this, StemFeatures.class);
+                startActivity(stemFeaturesPage);
+            }
+        });
 
         otherFeaturesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent otherFeaturesPage = new Intent(NewObservation.this, OtherFeatures.class);
+                startActivity(otherFeaturesPage);
+            }
+        });
+        otherFeaturesImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent otherFeaturesPage = new Intent(NewObservation.this, OtherFeatures.class);
@@ -134,21 +163,9 @@ public class NewObservation extends AppCompatActivity {
                 getResources().getStringArray(R.array.ringTypes));
         arrayAdapterCreator(ringTypeAdapter,ringType);
 
-*/
+
         //------------------------------------------------------------------------------------------
-
-        addPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    // use standard intent to capture an image
-                    Intent cameraPhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(cameraPhoto, CAMERA_REQUEST_CODE);
-                }
-                catch (ActivityNotFoundException anfe) {}
-            }
-        });
-
+*/
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,6 +242,27 @@ public class NewObservation extends AppCompatActivity {
                                 setValue(attributesMap.get(tag));
                     }
 
+                    if(CapFeatures.getBitmapsList() != null) {
+                        for (Bitmap photo: CapFeatures.getBitmapsList()) {
+                            bitmaps.add(photo);
+                        }
+                    }
+                    if(GillFeatures.getBitmapsList() != null) {
+                        for (Bitmap photo: GillFeatures.getBitmapsList()) {
+                            bitmaps.add(photo);
+                        }
+                    }
+                    if(StemFeatures.getBitmapsList() != null) {
+                        for (Bitmap photo: StemFeatures.getBitmapsList()) {
+                            bitmaps.add(photo);
+                        }
+                    }
+                    if(OtherFeatures.getBitmapsList() != null) {
+                        for (Bitmap photo: OtherFeatures.getBitmapsList()) {
+                            bitmaps.add(photo);
+                        }
+                    }
+
                     uploadPhotos(time);
                     Toast.makeText(NewObservation.this,"Observation submitted",
                             Toast.LENGTH_SHORT).show();
@@ -274,16 +312,6 @@ public class NewObservation extends AppCompatActivity {
         }
         else {
             return true;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
-            bitmap = (Bitmap) data.getExtras().get("data");
-            bitmaps.add(bitmap);
-            Toast.makeText(NewObservation.this, "Photo ready to be uploaded", Toast.LENGTH_SHORT).show();
         }
     }
 
